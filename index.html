@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shaday Store - Relatório de Vendas</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="logo-container">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='95' fill='%23fce7f3' stroke='%23ec4899' stroke-width='2'/%3E%3Cpath d='M100 50 Q110 60 115 75 Q118 85 120 100 Q118 110 115 125 Q110 140 100 150 Q90 140 85 125 Q82 110 80 100 Q82 85 85 75 Q90 60 100 50' fill='%23ec4899'/%3E%3Ctext x='100' y='170' font-size='24' font-weight='bold' fill='%23ec4899' text-anchor='middle' font-family='Arial'%3ESHADAY%3C/text%3E%3Ctext x='100' y='190' font-size='14' fill='%23ec4899' text-anchor='middle' font-family='Arial'%3ESTORE%3C/text%3E%3C/svg%3E" alt="Shaday Store" class="logo">
+            <h1>SHADAY STORE</h1>
+        </div>
+        <nav>
+            <button class="nav-btn active" data-tab="dashboard">
+                <span class="icon">📊</span> Dashboard
+            </button>
+            <button class="nav-btn" data-tab="sales">
+                <span class="icon">💰</span> Registrar Venda
+            </button>
+            <button class="nav-btn" data-tab="credit">
+                <span class="icon">📝</span> Fiados
+            </button>
+            <button class="nav-btn" data-tab="report">
+                <span class="icon">📄</span> Gerar Relatório
+            </button>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Header -->
+        <header class="header">
+            <h2>Bem-vinda à Shaday Store</h2>
+            <div class="header-info">
+                <span class="date-time">Hoje: <span id="currentDate"></span></span>
+                <button class="btn-clear" title="Limpar dados">🗑️</button>
+            </div>
+        </header>
+
+        <!-- Dashboard Tab -->
+        <section id="dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card sales-card">
+                    <div class="stat-icon">💵</div>
+                    <div class="stat-info">
+                        <h3>Total Vendas</h3>
+                        <p class="stat-value" id="totalSales">R$ 0,00</p>
+                    </div>
+                </div>
+
+                <div class="stat-card credit-card">
+                    <div class="stat-icon">📌</div>
+                    <div class="stat-info">
+                        <h3>Total Fiado</h3>
+                        <p class="stat-value" id="totalCredit">R$ 0,00</p>
+                    </div>
+                </div>
+
+                <div class="stat-card customers-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <h3>Clientes Devedores</h3>
+                        <p class="stat-value" id="totalCustomers">0</p>
+                    </div>
+                </div>
+
+                <div class="stat-card transactions-card">
+                    <div class="stat-icon">🔄</div>
+                    <div class="stat-info">
+                        <h3>Transações</h3>
+                        <p class="stat-value" id="totalTransactions">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="recent-activity">
+                <h3>Atividades Recentes</h3>
+                <div id="activityList" class="activity-list">
+                    <p class="empty-state">Nenhuma atividade registrada</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sales Registration Tab -->
+        <section id="sales" class="tab-content">
+            <div class="form-container">
+                <h3>Registrar Nova Venda</h3>
+                <form id="salesForm" class="form">
+                    <div class="form-group">
+                        <label>Descrição do Produto</label>
+                        <input type="text" id="productName" placeholder="Ex: Vestido Rosa" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Valor da Venda</label>
+                        <input type="number" id="saleAmount" placeholder="0.00" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cliente (Opcional)</label>
+                        <input type="text" id="customerName" placeholder="Nome do cliente">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tipo de Pagamento</label>
+                        <select id="paymentType">
+                            <option value="money">Dinheiro</option>
+                            <option value="card">Cartão</option>
+                            <option value="pix">Pix</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">💾 Registrar Venda</button>
+                </form>
+            </div>
+
+            <div class="sales-list">
+                <h3>Vendas Registradas</h3>
+                <div id="salesTableContainer" class="table-container">
+                    <table id="salesTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Cliente</th>
+                                <th>Valor</th>
+                                <th>Pagamento</th>
+                                <th>Data</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesTableBody">
+                        </tbody>
+                    </table>
+                </div>
+                <p id="noSalesMsg" class="empty-state">Nenhuma venda registrada</p>
+            </div>
+        </section>
+
+        <!-- Credit Tab -->
+        <section id="credit" class="tab-content">
+            <div class="form-container">
+                <h3>Registrar Compra Fiado</h3>
+                <form id="creditForm" class="form">
+                    <div class="form-group">
+                        <label>Nome do Cliente</label>
+                        <input type="text" id="creditCustomer" placeholder="Nome do cliente" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contato (Telefone/Email)</label>
+                        <input type="text" id="creditContact" placeholder="(11) 99999-9999 ou email@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descrição da Compra</label>
+                        <input type="text" id="creditDescription" placeholder="Ex: 2 vestidos e 1 bolsa" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Valor Total</label>
+                        <input type="number" id="creditAmount" placeholder="0.00" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Data do Vencimento</label>
+                        <input type="date" id="creditDueDate" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">➕ Adicionar Fiado</button>
+                </form>
+            </div>
+
+            <div class="credit-list">
+                <h3>Clientes com Fiados</h3>
+                <div id="creditTableContainer" class="table-container">
+                    <table id="creditTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Contato</th>
+                                <th>Descrição</th>
+                                <th>Valor</th>
+                                <th>Vencimento</th>
+                                <th>Status</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="creditTableBody">
+                        </tbody>
+                    </table>
+                </div>
+                <p id="noCreditMsg" class="empty-state">Nenhum fiado registrado</p>
+            </div>
+        </section>
+
+        <!-- Report Tab -->
+        <section id="report" class="tab-content">
+            <div class="report-container">
+                <h3>Gerar Relatório de Vendas</h3>
+                <div class="report-options">
+                    <div class="date-range">
+                        <label>Data Inicial:</label>
+                        <input type="date" id="reportStartDate">
+                    </div>
+                    <div class="date-range">
+                        <label>Data Final:</label>
+                        <input type="date" id="reportEndDate">
+                    </div>
+                    <button class="btn btn-secondary" id="previewBtn">👁️ Visualizar</button>
+                    <button class="btn btn-primary" id="generatePdfBtn">📥 Gerar PDF</button>
+                </div>
+
+                <div id="reportPreview" class="report-preview hidden">
+                    <div class="report-content" id="reportContent">
+                        <!-- Report will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
